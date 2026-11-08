@@ -58,7 +58,8 @@ jobs:
           t = m.read_text(encoding='utf-8')
           perms = ('    <uses-permission android:name="android.permission.INTERNET"/>\n'
                    '    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>\n'
-                   '    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>\n')
+                   '    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>\n'
+                   '    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>\n')
           t = t.replace('<application', perms + '    <application', 1)
           t = re.sub(r'android:label="[^"]*"', 'android:label="İndirim Radarı"', t, count=1)
           m.write_text(t, encoding='utf-8')
