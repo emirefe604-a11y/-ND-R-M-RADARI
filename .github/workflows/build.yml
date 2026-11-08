@@ -9,6 +9,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Repoya zip olarak yüklendiyse aç
+        run: |
+          for z in $(find . -name '*.zip' -not -path './.git/*'); do
+            echo "Zip açılıyor: $z"
+            unzip -oq "$z"
+          done
+
+      - name: Proje klasörünü bul (alt klasördeyse köke taşı)
+        run: |
+          P=$(find . -name pubspec.yaml -not -path './.git/*' -not -path './build/*' | head -1)
+          if [ -z "$P" ]; then
+            echo "pubspec.yaml reponun hiçbir yerinde bulunamadı. Repo içeriği:"
+            find . -not -path './.git/*' -type f | head -50
+            exit 1
+          fi
+          D=$(dirname "$P")
+          echo "Proje klasörü: $D"
+          if [ "$D" != "." ]; then cp -a "$D"/. .; fi
+
       - name: Gerekli dosyalar var mı?
         run: |
           for f in pubspec.yaml lib/main.dart assets/icon.png assets/icon_fg.png assets/ic_stat.png; do
