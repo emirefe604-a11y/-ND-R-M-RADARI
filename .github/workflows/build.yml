@@ -83,6 +83,25 @@ jobs:
                   s += "\ndependencies {\n    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'\n}\n"
               g.write_text(s, encoding='utf-8')
               break
+          # R8: google_mlkit_text_recognition diğer dil paketlerine (Çince, Devanagari, Japonca, Korece) başvurur;
+          # bunlar eklenmediği için "Missing class" hatası veriyor. Uyarıları bastır.
+          rules = app / 'proguard-rules.pro'
+          rules.write_text(
+              '-dontwarn com.google.mlkit.vision.text.chinese.**\n'
+              '-dontwarn com.google.mlkit.vision.text.devanagari.**\n'
+              '-dontwarn com.google.mlkit.vision.text.japanese.**\n'
+              '-dontwarn com.google.mlkit.vision.text.korean.**\n', encoding='utf-8')
+          for name in ('build.gradle.kts', 'build.gradle'):
+              g = app / name
+              if not g.exists():
+                  continue
+              s = g.read_text(encoding='utf-8')
+              if name.endswith('.kts'):
+                  s += '\nandroid {\n    buildTypes {\n        getByName("release") {\n            proguardFiles("proguard-rules.pro")\n        }\n    }\n}\n'
+              else:
+                  s += "\nandroid {\n    buildTypes {\n        release {\n            proguardFiles 'proguard-rules.pro'\n        }\n    }\n}\n"
+              g.write_text(s, encoding='utf-8')
+              break
           print('Android yamaları uygulandı')
           PY
 
